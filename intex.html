@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Agro Brasil | Curiosidades + Quiz Interativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===== VARIÁVEIS DE TEMA ===== */
+        :root {
+            /* Tema Claro (padrão) */
+            --bg-primary: #f5f7e9;
+            --bg-gradient-start: #f5f7e9;
+            --bg-gradient-end: #eef2e0;
+            --text-primary: #1e2a1c;
+            --text-secondary: #2c3a2b;
+            --card-bg: #ffffff;
+            --card-header-bg: #fef5e0;
+            --highlight-bg: #eef5e6;
+            --highlight-text: #1a4d2e;
+            --banner-bg: #2f5e3a;
+            --banner-text: #fffaec;
+            --footer-bg: #0f2b1b;
+            --footer-text: #dad7b6;
+            --btn-bg: #efc75e;
+            --btn-hover: #d6aa3c;
+            --border-color: rgba(239, 199, 94, 0.3);
+            --quiz-option-bg: #f7f9f0;
+            --quiz-option-border: #cfdfb5;
+            --simulador-bg: #eef2e3;
+            --fact-click-bg: #fdf8ed;
+            --fact-click-border: #b6cc94;
+            --extra-bg: #e6f0da;
+            --historic-bg: #fff7e8;
+            --selo-bg: #f9eec1;
+            --selo-text: #3c6b3a;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+        }
+
+        body.dark {
+            /* Tema Escuro */
+            --bg-primary: #1a2a1a;
+            --bg-gradient-start: #1a2a1a;
+            --bg-gradient-end: #0f1f0f;
+            --text-primary: #e8f0e8;
+            --text-secondary: #c8dcc8;
+            --card-bg: #1e3022;
+            --card-header-bg: #2a4a2a;
+            --highlight-bg: #2a3a2a;
+            --highlight-text: #c8e0c8;
+            --banner-bg: #1a3a2a;
+            --banner-text: #e8f0e0;
+            --footer-bg: #0a1a0a;
+            --footer-text: #a8c4a8;
+            --btn-bg: #c9921c;
+            --btn-hover: #b07d15;
+            --border-color: rgba(201, 146, 28, 0.5);
+            --quiz-option-bg: #2a3a2a;
+            --quiz-option-border: #4a6a3a;
+            --simulador-bg: #2a3a2a;
+            --fact-click-bg: #2a3a2a;
+            --fact-click-border: #c9921c;
+            --extra-bg: #1a3a2a;
+            --historic-bg: #2a3a2a;
+            --selo-bg: #4a6a3a;
+            --selo-text: #e8f0e0;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, 'Inter', sans-serif;
+            background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            line-height: 1.5;
+            scroll-behavior: smooth;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* header com tema agro - SEMPRE VERDE (não muda) */
+        .hero {
+            background: linear-gradient(125deg, #1e4a2f 0%, #0f3b24 100%);
+            color: #f9f7e1;
+            padding: 2rem 2rem;
+            text-align: center;
+            border-bottom: 8px solid #efc75e;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        /* Botão de tema flutuante */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            color: #f9f7e1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            background: #efc75e;
+            color: #1e3a1e;
+            transform: scale(1.05);
+        }
+
+        /* Botão de atalho para o quiz */
+        .quiz-shortcut {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #efc75e;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #1e3a1e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .quiz-shortcut:hover {
+            background: #d6aa3c;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero h1 span {
+            background: #efc75e;
+            color: #1e3a1e;
+            font-size: 1.6rem;
+            padding: 0 12px;
+            border-radius: 60px;
+            display: inline-block;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0.8rem auto 0;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .agro-icon {
+            font-size: 2rem;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+        }
+
+        /* container principal */
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* cards de curiosidades - grid responsivo */
+        .curiosities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 15px 30px var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 24px 36px var(--shadow-hover);
+            border-color: #efc75e;
+        }
+
+        .card-header {
+            background: var(--card-header-bg);
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #efc75e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header .emoji-badge {
+            font-size: 2rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .card-content .highlight {
+            background: var(--highlight-bg);
+            border-left: 5px solid #efc75e;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            margin-top: 12px;
+            font-weight: 600;
+            color: var(--highlight-text);
+            font-size: 0.9rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #c9921c;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 3rem 0 1.8rem;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b6e3c, #d6a02e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .facts-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .fact-banner {
+            background: var(--banner-bg);
+            color: var(--banner-text);
+            border-radius: 28px;
+            padding: 1.2rem 2rem;
+            flex: 1;
+            min-width: 230px;
+            text-align: center;
+            box-shadow: 0 8px 14px var(--shadow);
+            transition: all 0.2s;
+            border-bottom: 4px solid #efc75e;
+        }
+
+        .fact-banner strong {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 8px;
+            color: #ffdf8c;
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            border-top: 5px solid #efc75e;
+        }
+
+        footer a {
+            color: #efcd7b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-curiosity {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .btn-curiosity:hover {
+            background: #efc75e;
+            border-color: #efc75e;
+            color: #1e2a1c;
+        }
+
+        /* Seção do Quiz Interativo (destacada) */
+        .quiz-section {
+            scroll-margin-top: 100px;
+            background: var(--extra-bg);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: background 0.3s ease;
+        }
+
+        .interactive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-interact {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-interact:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 40px var(--shadow-hover);
+        }
+
+        .card-title {
+            background: var(--card-header-bg);
+            padding: 1rem 1.5rem;
+            border-bottom: 3px solid #efc75e;
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .quiz-question {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            background: var(--simulador-bg);
+            padding: 0.8rem;
+            border-radius: 20px;
+            color: var(--text-primary);
+        }
+
+        .quiz-option {
+            background: var(--quiz-option-bg);
+            margin: 0.6rem 0;
+            padding: 0.8rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--quiz-option-border);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .quiz-option:hover {
+            background: #efc75e;
+            color: #1e3a2f;
+            transform: scale(1.01);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 28px;
+            font-weight: bold;
+            text-align: center;
+            background: var(--highlight-bg);
+            color: var(--text-primary);
+        }
+
+        .score-area {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: bold;
+            background: var(--highlight-bg);
+            padding: 0.5rem;
+            border-radius: 40px;
+            color: var(--text-primary);
+        }
+
+        .btn-reset-quiz {
+            background: #2f6b43;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-reset-quiz:hover {
+            background: #efc75e;
+            color: #1e3a2f;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 0.5rem 0;
+            accent-color: #efc75e;
+        }
+
+        .result-simulacao {
+            background: var(--simulador-bg);
+            padding: 1rem;
+            border-radius: 28px;
+            margin: 1rem 0;
+            font-weight: bold;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .fact-click {
+            background: var(--fact-click-bg);
+            border-radius: 28px;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: 0.1s linear;
+            border: 2px dashed var(--fact-click-border);
+            color: var(--text-primary);
+        }
+
+        .fact-click:active {
+            background: #efc75e;
+        }
+
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ranking-list li {
+            background: var(--quiz-option-bg);
+            margin: 0.7rem 0;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            border-left: 8px solid #efc75e;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ranking-list li:hover {
+            background: var(--highlight-bg);
+        }
+
+        .extra-interactive {
+            background: var(--banner-bg);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            color: var(--banner-text);
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .selo {
+            background: var(--selo-bg);
+            border-radius: 100px;
+            padding: 6px 18px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--selo-text);
+            display: inline-block;
+        }
+
+        /* Estilo para os cards históricos */
+        .historic-card {
+            background: var(--historic-bg);
+            border-radius: 24px;
+            padding: 1rem 1.6rem;
+            max-width: 320px;
+            border-left: 6px solid #e0b146;
+            color: var(--text-primary);
+            transition: background 0.3s ease;
+        }
+
+        @media (max-width: 680px) {
+            .hero h1 { font-size: 1.8rem; }
+            .card-header h3 { font-size: 1.3rem; }
+            .curiosities-grid { grid-template-columns: 1fr; }
+            .interactive-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 1rem; }
+            .theme-toggle, .quiz-shortcut { padding: 6px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <button class="quiz-shortcut" id="quizShortcutBtn">
+        🎯 Ir para o Quiz Interativo
+    </button>
+    <button class="theme-toggle" id="themeToggleBtn">
+        🌙 Modo Escuro
+    </button>
+    <div class="agro-icon">🌾🚜🇧🇷</div>
+    <h1>
+        Agro Brasil 
+        <span>#OrgulhoDoCampo</span>
+    </h1>
+    <p>O gigante que alimenta o mundo! Conheça curiosidades surpreendentes sobre o agronegócio brasileiro.</p>
+    <div style="margin-top: 20px;">
+        <span class="selo">🍃 Potência sustentável</span>
+        <span class="selo" style="margin-left: 12px;">🌎 Exportação recorde</span>
+    </div>
+</header>
+
+<div class="container">
+    <!-- grade principal de curiosidades -->
+    <div class="curiosities-grid">
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">🏆</span>
+                <h3>Superpotência agrícola</h3>
+            </div>
+            <div class="card-content">
+                <p>O Brasil é o <strong>3º maior produtor mundial de alimentos</strong>, atrás apenas de China e EUA. Líder na produção de soja, café, açúcar, suco de laranja e carne bovina!</p>
+                <div class="highlight">📊 <span class="stat-number">+300 milhões</span> de toneladas de grãos por safra.</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">☕</span>
+                <h3>Rei do café por 150 anos</h3>
+            </div>
+            <div class="card-content">
+                <p>O Brasil é o maior produtor e exportador de café do mundo há mais de um século e meio. Cerca de ⅓ de todo o café consumido no planeta é brasileiro!</p>
+                <div class="highlight">🌱 Minas Gerais, Espírito Santo e São Paulo lideram a produção.</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">🐄</span>
+                <h3>Maior rebanho comercial</h3>
+            </div>
+            <div class="card-content">
+                <p>O Brasil tem o segundo maior rebanho bovino do mundo (cerca de 230 milhões de cabeças) e é o maior exportador de carne bovina.</p>
+                <div class="highlight">🥩 Em 2023, exportações de carne bateram recorde: +10%.</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">🌽</span>
+                <h3>Soja: o ouro verde</h3>
+            </div>
+            <div class="card-content">
+                <p>O Brasil é o maior produtor e exportador de soja do mundo. Safra 2023/2024 ultrapassou <strong>150 milhões de toneladas</strong>!</p>
+                <div class="highlight">📈 Mato Grosso é o estado que mais produz soja no Brasil.</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">🍊</span>
+                <h3>Reino do suco de laranja</h3>
+            </div>
+            <div class="card-content">
+                <p>O Brasil produz mais de 50% do suco de laranja do mundo.</p>
+                <div class="highlight">🍹 A cada 3 copos de suco de laranja no mundo, 2 são brasileiros.</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <span class="emoji-badge">🚁</span>
+                <h3>Monitoramento de precisão</h3>
+            </div>
+            <div class="card-content">
+                <p>Mais de <strong>80% das fazendas de grãos</strong> utilizam técnicas sustentáveis com drones e satélites.</p>
+                <div class="highlight">🛰️ Satélites brasileiros monitoram safras em tempo real.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DO QUIZ E SIMULADOR (COM ID PARA ATALHO) -->
+    <div id="quizSection" class="quiz-section">
+        <div class="section-title">
+            <span>🎮</span> Área Interativa: Quiz + Simulador <span>🚜</span>
+        </div>
+        <div class="interactive-grid">
+            <!-- CARD QUIZ -->
+            <div class="card-interact">
+                <div class="card-title"><span>📝</span> Quiz: Você sabe tudo sobre o Agro BR?</div>
+                <div class="card-body">
+                    <div id="quizContainer">
+                        <div class="quiz-question" id="quizQuestion">Carregando pergunta...</div>
+                        <div id="quizOptions"></div>
+                        <div id="quizFeedback" class="quiz-feedback"></div>
+                        <div class="score-area" id="quizScore">Pontuação: 0 / 5</div>
+                        <button id="resetQuizBtn" class="btn-reset-quiz">🔄 Reiniciar Quiz</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD SIMULADOR -->
+            <div class="card-interact">
+                <div class="card-title"><span>📊</span> Simulador de Safra 🌱</div>
+                <div class="card-body">
+                    <p><strong>🌽 Área plantada (hectares):</strong></p>
+                    <input type="range" id="hectaresSlider" min="10" max="5000" value="500" step="10">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>10 ha</span><span id="hectaresValue">500 ha</span><span>5000 ha</span>
+                    </div>
+                    <p style="margin-top: 16px;"><strong>📈 Produtividade média (sc/ha):</strong></p>
+                    <input type="range" id="produtividadeSlider" min="30" max="80" value="55" step="1">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>30 sc/ha</span><span id="produtividadeValue">55 sc/ha</span><span>80 sc/ha</span>
+                    </div>
+                    <div class="result-simulacao" id="simulacaoResultado">
+                        🧑‍🌾 Produção total: <strong>0 sacas</strong> (60kg)<br>
+                        📦 Equivalente a <strong>0 toneladas</strong>
+                    </div>
+                    <div style="font-size: 0.85rem; background: var(--highlight-bg); border-radius: 24px; padding: 8px; text-align: center; color: var(--text-primary);">
+                        💡 O Brasil produz mais de 150 milhões de toneladas de soja por ano!
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD CURIOSIDADES CLICÁVEIS -->
+            <div class="card-interact">
+                <div class="card-title"><span>🌟</span> Toque & Aprenda</div>
+                <div class="card-body">
+                    <div id="clickableFact" class="fact-click">🔍 Clique aqui para revelar um feito impressionante!</div>
+                    <div id="factDisplay" style="margin-top: 12px; font-weight: 500; background: var(--highlight-bg); border-radius: 20px; padding: 12px; text-align: center; color: var(--text-primary);">
+                        👆 Clique no bloco acima
+                    </div>
+                    <hr style="margin: 18px 0; border-color: var(--border-color);">
+                    <p><strong>🏆 TOP 5 produtos que o Brasil mais exporta (agro)</strong></p>
+                    <ul class="ranking-list" id="rankList">
+                        <li>Soja <span>🌎 Líder mundial</span></li>
+                        <li>Café <span>☕ 1º do mundo</span></li>
+                        <li>Carne de frango <span>🐔 maior exportador</span></li>
+                        <li>Açúcar <span>🍬 1ª posição</span></li>
+                        <li>Suco de laranja <span>🍊 70% do mercado global</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="extra-interactive">
+            <h3 style="display: flex; justify-content: center; gap: 10px;">✨ Fatos dinâmicos do campo ✨</h3>
+            <div id="dynamicFact" style="background: var(--highlight-bg); color: var(--text-primary); padding: 16px; border-radius: 50px; margin: 16px 0; font-weight: bold;">
+                🌾 Clique no botão abaixo para novo fato incrível
+            </div>
+            <button id="newDynamicFactBtn" style="background: #efc75e; border: none; padding: 10px 24px; border-radius: 40px; font-weight: bold; cursor: pointer; color: #1e3a1e;">🌿 Nova curiosidade sustentável 🌿</button>
+        </div>
+    </div>
+
+    <!-- curiosidades históricas -->
+    <div class="section-title">
+        <span>📜</span> Fatos históricos do Agro nacional <span>🇧🇷</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+        <div class="historic-card">
+            <strong>⚙️ Ciclo da cana-de-açúcar (séc. XVI)</strong><br>Primeiro grande ciclo econômico brasileiro.
+        </div>
+        <div class="historic-card">
+            <strong>☕ Ciclo do café (séc. XIX – início XX)</strong><br>Impulsionou ferrovias e desenvolvimento de SP.
+        </div>
+        <div class="historic-card">
+            <strong>🌾 Cerrado produtivo (anos 70/80)</strong><br>Embrapa transformou o Cerrado em celeiro de grãos.
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>🌿 Agro Brasil — Potência que alimenta o mundo com responsabilidade ambiental. 🌍</p>
+    <p>Dados: CONAB, EMBRAPA, USDA, MAPA | <a href="#">Conheça mais sobre o setor</a></p>
+    <p>🇧🇷 2025 · Do campo para o seu conhecimento 🚜</p>
+</footer>
+
+<script>
+    // ===================== TEMA ESCURO/CLARO =====================
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const body = document.body;
+    
+    function updateThemeButton(theme) {
+        if (theme === 'dark') {
+            themeBtn.innerHTML = '☀️ Modo Claro';
+        } else {
+            themeBtn.innerHTML = '🌙 Modo Escuro';
+        }
+    }
+    
+    // Carregar tema salvo
+    const savedTheme = localStorage.getItem('agroTheme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark');
+        updateThemeButton('dark');
+    } else {
+        updateThemeButton('light');
+    }
+    
+    themeBtn.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        if (body.classList.contains('dark')) {
+            localStorage.setItem('agroTheme', 'dark');
+            updateThemeButton('dark');
+        } else {
+            localStorage.setItem('agroTheme', 'light');
+            updateThemeButton('light');
+        }
+    });
+    
+    // ===================== ATALHO PARA O QUIZ =====================
+    const quizShortcut = document.getElementById('quizShortcutBtn');
+    const quizSection = document.getElementById('quizSection');
+    
+    quizShortcut.addEventListener('click', () => {
+        quizSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+        // Efeito visual de destaque
+        quizSection.style.transition = 'all 0.3s';
+        quizSection.style.boxShadow = '0 0 0 3px #efc75e';
+        setTimeout(() => {
+            quizSection.style.boxShadow = 'none';
+        }, 1000);
+    });
+    
+    // ===================== QUIZ =====================
+    const quizData = [
+        { question: "Qual produto o Brasil é o MAIOR produtor e exportador mundial?", options: ["Trigo", "Soja", "Arroz", "Cevada"], correct: 1, explanation: "✅ Correto! O Brasil é líder global em soja." },
+        { question: "Qual região brasileira é conhecida como o 'celeiro do mundo' e impulsionou o agronegócio moderno?", options: ["Amazônia", "Pantanal", "Cerrado", "Mata Atlântica"], correct: 2, explanation: "✅ Cerrado! A Embrapa desenvolveu tecnologias para o Cerrado." },
+        { question: "Além de café e soja, o Brasil é líder na produção de...", options: ["Banana", "Cana-de-açúcar", "Maçã", "Peras"], correct: 1, explanation: "✅ Cana-de-açúcar! Maior produtor mundial." },
+        { question: "Quantos % do território brasileiro é preservado com vegetação nativa?", options: ["30%", "50%", "66%", "80%"], correct: 2, explanation: "✅ 66%! O Brasil preserva enquanto produz." },
+        { question: "Maior estado produtor de grãos (soja, milho)?", options: ["Paraná", "Rio Grande do Sul", "Mato Grosso", "Goiás"], correct: 2, explanation: "✅ Mato Grosso! Motor do agro nacional." }
+    ];
+    
+    let currentQuestionIndex = 0;
+    let userScore = 0;
+    let quizAnswered = false;
+    const quizQuestionEl = document.getElementById("quizQuestion");
+    const quizOptionsEl = document.getElementById("quizOptions");
+    const quizFeedbackEl = document.getElementById("quizFeedback");
+    const quizScoreEl = document.getElementById("quizScore");
+    
+    function loadQuestion() {
+        quizAnswered = false;
+        const q = quizData[currentQuestionIndex];
+        quizQuestionEl.textContent = `${currentQuestionIndex+1}. ${q.question}`;
+        quizOptionsEl.innerHTML = "";
+        q.options.forEach((opt, idx) => {
+            const optDiv = document.createElement("div");
+            optDiv.classList.add("quiz-option");
+            optDiv.textContent = opt;
+            optDiv.addEventListener("click", () => handleAnswer(idx));
+            quizOptionsEl.appendChild(optDiv);
+        });
+        quizFeedbackEl.innerHTML = "";
+        // Remove botão next se existir
+        const existingNext = document.getElementById("nextQuestionBtn");
+        if (existingNext) existingNext.remove();
+    }
+    
+    function handleAnswer(selectedIdx) {
+        if (quizAnswered) return;
+        const currentQ = quizData[currentQuestionIndex];
+        if (selectedIdx === currentQ.correct) {
+            userScore++;
+            quizFeedbackEl.innerHTML = `<span style="color:#2a6b3c;">🎉 CORRETO! ${currentQ.explanation}</span>`;
+        } else {
+            quizFeedbackEl.innerHTML = `<span style="color:#b34e1a;">❌ Errado! A correta é: ${currentQ.options[currentQ.correct]}.<br>${currentQ.explanation}</span>`;
+        }
+        quizAnswered = true;
+        updateScore();
+        
+        if (!document.getElementById("nextQuestionBtn") && currentQuestionIndex < quizData.length - 1) {
+            const nextBtn = document.createElement("button");
+            nextBtn.id = "nextQuestionBtn";
+            nextBtn.textContent = "➡️ Próxima pergunta";
+            nextBtn.style.marginTop = "12px";
+            nextBtn.style.width = "100%";
+            nextBtn.style.background = "#2f6b43";
+            nextBtn.style.color = "white";
+            nextBtn.style.borderRadius = "40px";
+            nextBtn.style.padding = "8px";
+            nextBtn.style.cursor = "pointer";
+            nextBtn.style.border = "none";
+            nextBtn.addEventListener("click", () => {
+                currentQuestionIndex++;
+                loadQuestion();
+                nextBtn.remove();
+            });
+            quizOptionsEl.parentNode.appendChild(nextBtn);
+        } else if (currentQuestionIndex === quizData.length - 1 && quizAnswered && !document.getElementById("finalMsg")) {
+            const finalMsg = document.createElement("div");
+            finalMsg.id = "finalMsg";
+            finalMsg.style.marginTop = "12px";
+            finalMsg.style.fontWeight = "bold";
+            finalMsg.style.textAlign = "center";
+            finalMsg.style.background = "#ffefc2";
+            finalMsg.style.padding = "10px";
+            finalMsg.style.borderRadius = "32px";
+            finalMsg.style.color = "#1e3a2f";
+            finalMsg.innerHTML = `🏆 Final: ${userScore}/${quizData.length} 🏆<br> O Brasil Agro é gigante!`;
+            quizOptionsEl.parentNode.appendChild(finalMsg);
+        }
+    }
+    
+    function updateScore() { quizScoreEl.innerHTML = `Pontuação: ${userScore} / ${quizData.length}`; }
+    function resetQuiz() {
+        currentQuestionIndex = 0; userScore = 0; quizAnswered = false;
+        updateScore(); loadQuestion();
+        const nextBtn = document.getElementById("nextQuestionBtn");
+        if (nextBtn) nextBtn.remove();
+        const finalMsgDiv = document.getElementById("finalMsg");
+        if (finalMsgDiv) finalMsgDiv.remove();
+        quizFeedbackEl.innerHTML = "";
+    }
+    document.getElementById("resetQuizBtn").addEventListener("click", resetQuiz);
+    loadQuestion();
+    
+    // Simulador
+    const hectaresSlider = document.getElementById("hectaresSlider");
+    const prodSlider = document.getElementById("produtividadeSlider");
+    const hectaresVal = document.getElementById("hectaresValue");
+    const prodVal = document.getElementById("produtividadeValue");
+    const simulResult = document.getElementById("simulacaoResultado");
+    function updateSimulator() {
+        let hectares = parseFloat(hectaresSlider.value);
+        let prodScHa = parseFloat(prodSlider.value);
+        let totalSacas = hectares * prodScHa;
+        let totalToneladas = totalSacas * 0.060;
+        hectaresVal.innerText = hectares + " ha";
+        prodVal.innerText = prodScHa + " sc/ha";
+        simulResult.innerHTML = `🧑‍🌾 Produção total: <strong>${totalSacas.toFixed(0)} sacas</strong> (60kg)<br>📦 Equivalente a <strong>${totalToneladas.toFixed(1)} toneladas</strong> de soja.`;
+    }
+    hectaresSlider.addEventListener("input", updateSimulator);
+    prodSlider.addEventListener("input", updateSimulator);
+    updateSimulator();
+    
+    // Curiosidades clicáveis
+    const factArray = [
+        "🚜 Brasil tem 230M de cabeças de gado!",
+        "☕ Café brasileiro = 33% do consumo global.",
+        "🌽 Milho safrinha aumentou produção em 400%.",
+        "🍊 Brasil produz 70% do suco de laranja mundial.",
+        "🐝 Maior programa sustentável do hemisfério sul (ABC+).",
+        "💡 Embrapa já desenvolveu +9.000 tecnologias para o campo!"
+    ];
+    let factIndex = 0;
+    document.getElementById("clickableFact").addEventListener("click", () => {
+        document.getElementById("factDisplay").innerHTML = `✨ ${factArray[factIndex]} ✨`;
+        factIndex = (factIndex + 1) % factArray.length;
+    });
+    // Inicializar com primeiro fato
+    document.getElementById("factDisplay").innerHTML = `✨ ${factArray[0]} ✨`;
+    factIndex = 1;
+    
+    // Fatos dinâmicos
+    const dynamicFactsList = [
+        "🌿 Maior área agricultável não utilizada do mundo, preservando florestas.",
+        "💡 Mais de 80% das fazendas usam plantio direto na palha, reduzindo erosão.",
+        "🐔 Maior exportador de carne de frango desde 2004, atendendo +150 países.",
+        "⚡ Etanol de cana reduz em 90% as emissões comparado à gasolina.",
+        "🌎 Embrapa é referência mundial em pesquisa agropecuária tropical.",
+        "🚛 Portos de Santos, Paranaguá e Itajaí batem recordes anuais de exportação."
+    ];
+    let dynIndex = 0;
+    function updateDynamicFact() {
+        document.getElementById("dynamicFact").innerHTML = `🌾 ${dynamicFactsList[dynIndex]} 🌾`;
+        dynIndex = (dynIndex + 1) % dynamicFactsList.length;
+    }
+    document.getElementById("newDynamicFactBtn").addEventListener("click", updateDynamicFact);
+    updateDynamicFact();
+    
+    // Ranking interativo
+    document.querySelectorAll("#rankList li").forEach(item => {
+        item.addEventListener("click", () => alert(`📊 ${item.innerText} - O agro brasileiro é gigante nesse setor!`));
+    });
+    
+    console.log("🚜 Site com tema escuro/claro funcionando! Use o botão no canto superior direito.");
+</script>
+</body>
+</html>
